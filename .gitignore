@@ -8,3 +8,7 @@ build_config.mk
 db_bench
 leveldbutil
 bin/
+
+CMakeCache*
+*.cmake
+CMakeFiles*
