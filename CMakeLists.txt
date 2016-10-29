@@ -61,15 +61,22 @@ if (UNIX)
     endif()
 
 elseif (WIN32)
+    set(ZLIB_LIBRARY "C:/ProgramData/libs/zlib128_dll/lib/zdll.lib" CACHE FILEPATH "zlib library (.lib) file path")
+    set(ZLIB_INCLUDE_DIR "C:/ProgramData/libs/zlib128_dll/include" CACHE PATH "zlib include directory")
+
     list(APPEND SOURCES port/port_win.cc)
     list(APPEND SOURCES util/env_win.cc)
-    list(APPEND SOURCES util/env_win_detail/win_misc.cc)
-    list(APPEND SOURCES util/env_win_detail/win_mmap.cc)
-    list(APPEND SOURCES util/env_win_detail/win_thread.cc)
-    list(APPEND SOURCES util/env_win_detail/win_time.cc)
-    list(APPEND SOURCES util/env_win_detail/winapi.cc)
-
-    add_definitions(-DLEVELDB_PLATFORM_WINDOWS)
+    add_definitions(-DLEVELDB_PLATFORM_WINDOWS "-DDLLX=__declspec(dllexport)")
 endif()
 
+message(STATUS "Checking for zdll.lib in ${ZLIB_LIBRARY}")
+message(STATUS "Checking for zlib include dir in ${ZLIB_INCLUDE_DIR}")
+
+
 add_library(leveldb ${SOURCES})
+
+find_package( ZLIB REQUIRED )
+if ( ZLIB_FOUND )
+    include_directories( ${ZLIB_INCLUDE_DIRS} )
+    target_link_libraries( leveldb ${ZLIB_LIBRARIES} )
+endif( ZLIB_FOUND )

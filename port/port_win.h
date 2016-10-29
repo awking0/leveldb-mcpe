@@ -38,6 +38,8 @@
 #include <mutex>
 #include <stdint.h>
 
+typedef ptrdiff_t ssize_t;
+
 namespace leveldb {
 	namespace port {
 
