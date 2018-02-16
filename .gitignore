@@ -12,3 +12,8 @@ bin/
 CMakeCache*
 *.cmake
 CMakeFiles*
+
+# build
+build/
+Win32/
+leveldb.dir/
