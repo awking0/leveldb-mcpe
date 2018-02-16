@@ -44,11 +44,11 @@ TESTS = \
 	util/cache_test \
 	util/coding_test \
 	util/crc32c_test \
+	util/env_posix_test \
 	util/env_test \
 	util/hash_test
 
 UTILS = \
-	db/db_bench \
 	db/leveldbutil
 
 # Put the object files in a subdirectory, but the application at the top of the object dir.
@@ -60,7 +60,7 @@ BENCHMARKS = \
 	doc/bench/db_bench_tree_db
 
 CFLAGS += -I. -I./include $(PLATFORM_CCFLAGS) $(OPT)
-CXXFLAGS += --std=c++11 -DDLLX= -I. -I./include $(PLATFORM_CXXFLAGS) $(OPT)
+CXXFLAGS += -DDLLX= -I. -I./include $(PLATFORM_CXXFLAGS) $(OPT)
 
 LDFLAGS += $(PLATFORM_LDFLAGS)
 LIBS += $(PLATFORM_LIBS) -lz
@@ -80,7 +80,7 @@ else
 STATIC_OUTDIR=out-static
 SHARED_OUTDIR=out-shared
 STATIC_PROGRAMS := $(addprefix $(STATIC_OUTDIR)/, $(PROGNAMES))
-SHARED_PROGRAMS := $(addprefix $(SHARED_OUTDIR)/, db_bench)
+#SHARED_PROGRAMS := $(addprefix $(SHARED_OUTDIR)/, db_bench)
 endif
 
 STATIC_LIBOBJECTS := $(addprefix $(STATIC_OUTDIR)/, $(SOURCES:.cc=.o))
@@ -121,7 +121,7 @@ SHARED_MEMENVLIB = $(SHARED_OUTDIR)/libmemenv.a
 else
 # Update db.h if you change these.
 SHARED_VERSION_MAJOR = 1
-SHARED_VERSION_MINOR = 18
+SHARED_VERSION_MINOR = 20
 SHARED_LIB1 = libleveldb.$(PLATFORM_SHARED_EXT)
 SHARED_LIB2 = $(SHARED_LIB1).$(SHARED_VERSION_MAJOR)
 SHARED_LIB3 = $(SHARED_LIB1).$(SHARED_VERSION_MAJOR).$(SHARED_VERSION_MINOR)
@@ -208,6 +208,7 @@ $(DEVICE_OUTDIR)/db: | $(DEVICE_OUTDIR)
 
 $(DEVICE_OUTDIR)/helpers/memenv: | $(DEVICE_OUTDIR)
 	mkdir -p $@
+
 $(DEVICE_OUTDIR)/port: | $(DEVICE_OUTDIR)
 	mkdir $@
 
@@ -336,6 +337,9 @@ $(STATIC_OUTDIR)/db_test:db/db_test.cc $(STATIC_LIBOBJECTS) $(TESTHARNESS)
 $(STATIC_OUTDIR)/dbformat_test:db/dbformat_test.cc $(STATIC_LIBOBJECTS) $(TESTHARNESS)
 	$(CXX) $(LDFLAGS) $(CXXFLAGS) db/dbformat_test.cc $(STATIC_LIBOBJECTS) $(TESTHARNESS) -o $@ $(LIBS)
 
+$(STATIC_OUTDIR)/env_posix_test:util/env_posix_test.cc $(STATIC_LIBOBJECTS) $(TESTHARNESS)
+	$(CXX) $(LDFLAGS) $(CXXFLAGS) util/env_posix_test.cc $(STATIC_LIBOBJECTS) $(TESTHARNESS) -o $@ $(LIBS)
+
 $(STATIC_OUTDIR)/env_test:util/env_test.cc $(STATIC_LIBOBJECTS) $(TESTHARNESS)
 	$(CXX) $(LDFLAGS) $(CXXFLAGS) util/env_test.cc $(STATIC_LIBOBJECTS) $(TESTHARNESS) -o $@ $(LIBS)
 
@@ -411,3 +415,9 @@ $(SHARED_OUTDIR)/%.o: %.cc
 
 $(SHARED_OUTDIR)/%.o: %.c
 	$(CC) $(CFLAGS) $(PLATFORM_SHARED_CFLAGS) -c $< -o $@
+
+$(STATIC_OUTDIR)/port/port_posix_sse.o: port/port_posix_sse.cc
+	$(CXX) $(CXXFLAGS) $(PLATFORM_SSEFLAGS) -c $< -o $@
+
+$(SHARED_OUTDIR)/port/port_posix_sse.o: port/port_posix_sse.cc
+	$(CXX) $(CXXFLAGS) $(PLATFORM_SHARED_CFLAGS) $(PLATFORM_SSEFLAGS) -c $< -o $@
