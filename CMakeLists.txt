@@ -68,7 +68,12 @@ elseif (WIN32)
     add_definitions(-DLEVELDB_PLATFORM_WINDOWS "-DDLLX=__declspec(dllexport)")
 endif()
 
-add_library(leveldb ${SOURCES})
+if (SHARED)
+    add_library(leveldb SHARED ${SOURCES})
+else()
+    add_library(leveldb ${SOURCES})
+endif()
+
 
 find_package(ZLIB REQUIRED)
 if (ZLIB_FOUND)
