@@ -1,5 +1,5 @@
 project(leveldb)
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.11)
 
 include(CheckCXXCompilerFlag)
 
@@ -42,7 +42,6 @@ list(APPEND SOURCES util/status.cc)
 list(APPEND SOURCES db/zlib_compressor.cc)
 list(APPEND SOURCES db/zstd_compressor.cc)
 list(APPEND SOURCES port/port_posix_sse.cc)
-include_directories(. include)
 
 if (UNIX)
     list(APPEND SOURCES port/port_posix.cc)
@@ -70,13 +69,16 @@ endif()
 
 if (SHARED)
     add_library(leveldb SHARED ${SOURCES})
+    target_compile_definitions(leveldb PUBLIC LEVELDB_SHARED)
 else()
     add_library(leveldb ${SOURCES})
 endif()
 
-
 find_package(ZLIB REQUIRED)
 if (ZLIB_FOUND)
-    include_directories( ${ZLIB_INCLUDE_DIRS} )
-    target_link_libraries( leveldb ${ZLIB_LIBRARIES} )
+    target_include_directories(leveldb PRIVATE ${ZLIB_INCLUDE_DIRS})
+    target_link_libraries(leveldb ${ZLIB_LIBRARIES})
 endif(ZLIB_FOUND)
+
+target_include_directories(leveldb PUBLIC include .)
+target_compile_definitions(leveldb PRIVATE LEVELDB_IMPLEMENTATION)

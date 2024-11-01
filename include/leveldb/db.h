@@ -6,7 +6,7 @@
 #define STORAGE_LEVELDB_INCLUDE_DB_H_
 
 #include <stdint.h>
-#include <stdio.h>
+#include "leveldb/export.h"
 #include "leveldb/iterator.h"
 #include "leveldb/options.h"
 

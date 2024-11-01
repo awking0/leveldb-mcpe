@@ -1,10 +1,8 @@
 #pragma once
 
 #include <string>
-#include <cassert>
 #include <cstdint>
-#include <unordered_map>
-#include <memory>
+#include "leveldb/export.h"
 
 namespace leveldb {
 	class DLLX Slice;

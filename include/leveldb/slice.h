@@ -16,9 +16,9 @@
 #define STORAGE_LEVELDB_INCLUDE_SLICE_H_
 
 #include <assert.h>
-#include <stddef.h>
 #include <string.h>
 #include <string>
+#include "leveldb/export.h"
 
 namespace leveldb {
 

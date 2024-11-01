@@ -5,10 +5,8 @@
 #ifndef STORAGE_LEVELDB_INCLUDE_OPTIONS_H_
 #define STORAGE_LEVELDB_INCLUDE_OPTIONS_H_
 
-#include <stddef.h>
-
 #include <memory>
-#include <unordered_map>
+#include "leveldb/export.h"
 
 namespace leveldb {
 

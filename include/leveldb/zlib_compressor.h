@@ -1,57 +1,55 @@
+#ifndef STORAGE_LEVELDB_INCLUDE_ZLIB_COMPRESSOR_H_
+#define STORAGE_LEVELDB_INCLUDE_ZLIB_COMPRESSOR_H_
 
-#pragma once
-
+#include "leveldb/export.h"
 #include "leveldb/compressor.h"
+#include <cassert>
 
 namespace leveldb {
 
-	class DLLX ZlibCompressorBase : public Compressor 
+class DLLX ZlibCompressorBase : public Compressor {
+public:
+	int inflate(const char* input, size_t length, ::std::string &output) const;
+
+	const int compressionLevel;
+	const bool raw;
+
+    virtual ~ZlibCompressorBase() = default;
+
+	ZlibCompressorBase(char uniqueCompressionID, int compressionLevel, bool raw) :
+		Compressor(uniqueCompressionID),
+		compressionLevel(compressionLevel),
+		raw(raw)
 	{
-	public:
-		int inflate(const char* input, size_t length, ::std::string &output) const;
+		assert(compressionLevel >= -1 && compressionLevel <= 9);
+	}
 
-		const int compressionLevel;
-		const bool raw;
-        
-        virtual ~ZlibCompressorBase() {
-            
-        }
+	virtual void compressImpl(const char* input, size_t length, ::std::string& output) const override;
 
-		ZlibCompressorBase(char uniqueCompressionID, int compressionLevel, bool raw) :
-			Compressor(uniqueCompressionID),
-			compressionLevel(compressionLevel),
-			raw(raw)
-		{
-			assert(compressionLevel >= -1 && compressionLevel <= 9);
-		}
+	virtual bool decompress(const char* input, size_t length, ::std::string &output) const override;
 
-		virtual void compressImpl(const char* input, size_t length, ::std::string& output) const override;
+private:
 
-		virtual bool decompress(const char* input, size_t length, ::std::string &output) const override;
+	int _window() const;
 
-	private:
+};
 
-		int _window() const;
+class DLLX ZlibCompressor : public ZlibCompressorBase {
+public:
+	static const int SERIALIZE_ID = 2;
 
-	};
+	ZlibCompressor(int compressionLevel = -1) :
+		ZlibCompressorBase(SERIALIZE_ID, compressionLevel, false) {}
+};
 
-	class DLLX ZlibCompressor : public ZlibCompressorBase {
-	public:
-		static const int SERIALIZE_ID = 2;
+class DLLX ZlibCompressorRaw : public ZlibCompressorBase {
+public:
+	static const int SERIALIZE_ID = 4;
 
-		ZlibCompressor(int compressionLevel = -1) :
-			ZlibCompressorBase(SERIALIZE_ID, compressionLevel, false) {
+	ZlibCompressorRaw(int compressionLevel = -1) :
+		ZlibCompressorBase(SERIALIZE_ID, compressionLevel, true) {}
+};
 
-		}
-	};
-
-	class DLLX ZlibCompressorRaw : public ZlibCompressorBase {
-	public:
-		static const int SERIALIZE_ID = 4;
-
-		ZlibCompressorRaw(int compressionLevel = -1) :
-			ZlibCompressorBase(SERIALIZE_ID, compressionLevel, true) {
-
-		}
-	};
 }
+
+#endif // STORAGE_LEVELDB_INCLUDE_ZLIB_COMPRESSOR_H_

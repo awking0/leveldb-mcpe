@@ -1,23 +1,27 @@
-#pragma once
+#ifndef STORAGE_LEVELDB_INCLUDE_SNAPPY_COMPRESSOR_H_
+#define STORAGE_LEVELDB_INCLUDE_SNAPPY_COMPRESSOR_H_
 
-#include "compressor.h"
+#include "leveldb/export.h"
+#include "leveldb/compressor.h"
 
 namespace leveldb {
-	class DLLX SnappyCompressor : public Compressor 
-	{
-	public:
 
-		static const char SERIALIZE_ID = 1;
-        
-        virtual ~SnappyCompressor() {}
+class DLLX SnappyCompressor : public Compressor
+{
+public:
 
-		SnappyCompressor() :
-			Compressor(SERIALIZE_ID) {
+	static const char SERIALIZE_ID = 1;
 
-		}
+    virtual ~SnappyCompressor() {}
 
-		virtual void compressImpl(const char* input, size_t length, ::std::string& output) const override;
+	SnappyCompressor() :
+		Compressor(SERIALIZE_ID) {}
 
-		virtual bool decompress(const char* input, size_t length, ::std::string& output) const override;
-	};
+	virtual void compressImpl(const char* input, size_t length, ::std::string& output) const override;
+
+	virtual bool decompress(const char* input, size_t length, ::std::string& output) const override;
+};
+
 }
+
+#endif // STORAGE_LEVELDB_INCLUDE_SNAPPY_COMPRESSOR_H_
